@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
 {
-    /** @use HasFactory<\Database\Factories\CountryFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'code',
+        'currency',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
 }
