@@ -15,24 +15,26 @@ Route::get('/user', function (Request $request) {
 |--------------------------------------------------------------------------
 */
 
-Route::get('employees/list', [EmployeeController::class, 'getEmployeeList']);
-Route::patch('employees/{employee}/active', [EmployeeController::class, 'active']);
-Route::apiResource('employees', EmployeeController::class);
+Route::middleware(['ip.throttle', 'burst.throttle', 'role.throttle', 'token.throttle'])->group(function () {
+    Route::get('employees/list', [EmployeeController::class, 'getEmployeeList']);
+    Route::patch('employees/{employee}/active', [EmployeeController::class, 'active']);
+    Route::apiResource('employees', EmployeeController::class);
 
-/*
-|--------------------------------------------------------------------------
-| Dashboard APIs
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard APIs
+    |--------------------------------------------------------------------------
+    */
 
-Route::prefix('dashboard')->group(function () {
-    Route::get('summary', [DashboardController::class, 'summary']);
+    Route::prefix('dashboard')->group(function () {
+        Route::get('summary', [DashboardController::class, 'summary']);
 
-    Route::get('country-salary-insights', [DashboardController::class, 'countrySalaryInsights']);
+        Route::get('country-salary-insights', [DashboardController::class, 'countrySalaryInsights']);
 
-    Route::get('job-title-insights', [DashboardController::class, 'jobTitleInsights']);
+        Route::get('job-title-insights', [DashboardController::class, 'jobTitleInsights']);
 
-    Route::get('department-insights', [DashboardController::class, 'departmentInsights']);
+        Route::get('department-insights', [DashboardController::class, 'departmentInsights']);
 
-    Route::get('salary-distribution', [DashboardController::class, 'salaryDistribution']);
+        Route::get('salary-distribution', [DashboardController::class, 'salaryDistribution']);
+    });
 });
