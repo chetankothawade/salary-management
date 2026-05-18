@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\EmployeeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::get('employees/list', [EmployeeController::class, 'getEmployeeList']);
+Route::patch('employees/{employee}/active', [EmployeeController::class, 'active']);
+Route::apiResource('employees', EmployeeController::class);

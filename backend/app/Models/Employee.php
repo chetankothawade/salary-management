@@ -1,15 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\EmployeeEmploymentType;
+use App\Enums\EmployeeStatus;
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasUuid, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -25,6 +29,8 @@ class Employee extends Model
 
     protected $casts = [
         'salary' => 'decimal:2',
+        'employment_type' => EmployeeEmploymentType::class,
+        'status' => EmployeeStatus::class,
         'joining_date' => 'date',
     ];
 
