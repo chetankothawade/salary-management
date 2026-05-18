@@ -10,6 +10,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 // USE FOR Rate Limiting MIDDLEWARE
+use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -24,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Enable CORS globally
-        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+        $middleware->append(HandleCors::class);
         // USE FOR Rate Limiting MIDDLEWARE
         $middleware->alias([
             'role.throttle' => RateLimitByRole::class,
@@ -95,7 +96,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 405);
         });
 
-        $exceptions->render(function (\DomainException $e, Request $request) {
+        $exceptions->render(function (DomainException $e, Request $request) {
             if (! $request->expectsJson()) {
                 return null;
             }
@@ -107,7 +108,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
 
-        $exceptions->render(function (\Throwable $e, Request $request) {
+        $exceptions->render(function (Throwable $e, Request $request) {
             if (! $request->expectsJson()) {
                 return null;
             }

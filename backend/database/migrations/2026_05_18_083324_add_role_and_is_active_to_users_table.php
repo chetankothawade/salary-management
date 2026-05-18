@@ -17,11 +17,11 @@ return new class extends Migration
                 ->nullable()
                 ->unique()
                 ->after('id');
-                
+
             $table->enum('role', [
                 'admin',
                 'hr_manager',
-                'employee'
+                'employee',
             ])->default('employee')->after('password');
 
             $table->boolean('is_active')
@@ -51,7 +51,7 @@ return new class extends Migration
 
             $table->dropColumn([
                 'role',
-                'is_active'
+                'is_active',
             ]);
         });
     }

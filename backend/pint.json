@@ -1,0 +1,10 @@
+{
+    "preset": "laravel",
+    "exclude": [
+        "bootstrap/cache",
+        ".phpstan-cache",
+        ".phpstan-tmp",
+        "storage",
+        "vendor"
+    ]
+}

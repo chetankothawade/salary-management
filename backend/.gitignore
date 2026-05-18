@@ -4,6 +4,8 @@
 .env.backup
 .env.production
 .phpactor.json
+.phpstan-cache
+.phpstan-tmp
 .phpunit.result.cache
 /.codex
 /.cursor/

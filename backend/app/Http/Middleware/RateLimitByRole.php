@@ -27,7 +27,12 @@ class RateLimitByRole
             UserRole::HR_MANAGER->value => 150,
             UserRole::EMPLOYEE->value => 50,
         ];
-        $maxAttempts = $limits[$role] ?? $limits[UserRole::EMPLOYEE->value];
+
+        if (! array_key_exists($role, $limits)) {
+            $role = UserRole::EMPLOYEE->value;
+        }
+
+        $maxAttempts = $limits[$role];
         $key = "rate:{$role}:".($user === null ? $request->ip() : $user->id);
 
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {

@@ -52,12 +52,12 @@ return new class extends Migration
                 'full_time',
                 'part_time',
                 'contract',
-                'intern'
+                'intern',
             ])->default('full_time');
 
             $table->enum('status', [
                 'active',
-                'inactive'
+                'inactive',
             ])->default('active');
 
             $table->date('joining_date');
@@ -78,12 +78,12 @@ return new class extends Migration
 
             $table->index([
                 'country_id',
-                'job_title'
+                'job_title',
             ]);
 
             $table->index([
                 'country_id',
-                'salary'
+                'salary',
             ]);
         });
     }

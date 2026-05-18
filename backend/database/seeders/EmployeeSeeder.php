@@ -198,13 +198,13 @@ class EmployeeSeeder extends Seeder
 
                 $lastName = $lastNames[array_rand($lastNames)];
 
-                $fullName = $firstName . ' ' . $lastName;
+                $fullName = $firstName.' '.$lastName;
 
                 $email = strtolower(
-                    $firstName .
-                    '.' .
-                    $lastName .
-                    rand(1000, 9999) .
+                    $firstName.
+                    '.'.
+                    $lastName.
+                    rand(1000, 9999).
                     '@example.com'
                 );
 
@@ -266,7 +266,7 @@ class EmployeeSeeder extends Seeder
 
                     'user_id' => $user->id,
 
-                    'employee_code' => 'EMP' . str_pad(
+                    'employee_code' => 'EMP'.str_pad(
                         (string) $user->id,
                         6,
                         '0',
@@ -304,7 +304,7 @@ class EmployeeSeeder extends Seeder
             DB::table('employees')->insert($employees);
 
             $this->command->info(
-                'Inserted ' . ($i + $chunkSize) . ' employees'
+                'Inserted '.($i + $chunkSize).' employees'
             );
         }
 
@@ -327,87 +327,73 @@ class EmployeeSeeder extends Seeder
             'Node.js Developer',
             'React Developer',
             'Vue.js Developer',
-            'Angular Developer' =>
-                rand(70000, 140000),
+            'Angular Developer' => rand(70000, 140000),
 
             'Senior Software Engineer',
             'Lead Software Engineer',
-            'Technical Lead' =>
-                rand(140000, 220000),
+            'Technical Lead' => rand(140000, 220000),
 
             'Principal Software Engineer',
             'Engineering Manager',
             'Solution Architect',
-            'Enterprise Architect' =>
-                rand(180000, 300000),
+            'Enterprise Architect' => rand(180000, 300000),
 
             'Full Stack Developer',
             'Mobile App Developer',
             'Android Developer',
             'iOS Developer',
             'Flutter Developer',
-            'React Native Developer' =>
-                rand(80000, 160000),
+            'React Native Developer' => rand(80000, 160000),
 
             'DevOps Engineer',
             'Site Reliability Engineer',
             'Cloud Engineer',
             'AWS Engineer',
-            'Azure Engineer' =>
-                rand(100000, 190000),
+            'Azure Engineer' => rand(100000, 190000),
 
             'System Administrator',
             'Network Engineer',
             'Database Administrator',
             'Technical Support Engineer',
-            'IT Support Specialist' =>
-                rand(60000, 120000),
+            'IT Support Specialist' => rand(60000, 120000),
 
             'Data Engineer',
             'Data Analyst',
             'Data Scientist',
             'AI Engineer',
-            'Machine Learning Engineer' =>
-                rand(120000, 250000),
+            'Machine Learning Engineer' => rand(120000, 250000),
 
             'Cyber Security Analyst',
-            'Security Engineer' =>
-                rand(90000, 180000),
+            'Security Engineer' => rand(90000, 180000),
 
             'QA Engineer',
             'Automation Test Engineer',
             'Manual Test Engineer',
-            'Performance Test Engineer' =>
-                rand(60000, 130000),
+            'Performance Test Engineer' => rand(60000, 130000),
 
             'UI UX Designer',
             'Graphic Designer',
-            'Product Designer' =>
-                rand(65000, 140000),
+            'Product Designer' => rand(65000, 140000),
 
             'Business Analyst',
             'System Analyst',
             'Project Manager',
             'Product Manager',
             'Program Manager',
-            'Scrum Master' =>
-                rand(90000, 180000),
+            'Scrum Master' => rand(90000, 180000),
 
             'HR Executive',
             'Recruiter',
             'Talent Acquisition Specialist',
-            'Payroll Executive' =>
-                rand(50000, 100000),
+            'Payroll Executive' => rand(50000, 100000),
 
-            'HR Manager' =>
-                rand(90000, 160000),
+            'HR Manager' => rand(90000, 160000),
 
             'Finance Analyst',
             'Accountant',
             'Senior Accountant',
             'Finance Manager',
-            'Investment Analyst' =>
-                rand(70000, 170000),
+            'Investment Analyst' => rand(70000, 170000),
 
             'Sales Executive',
             'Business Development Executive',
@@ -415,28 +401,23 @@ class EmployeeSeeder extends Seeder
             'Digital Marketing Specialist',
             'SEO Specialist',
             'Content Writer',
-            'Social Media Manager' =>
-                rand(50000, 120000),
+            'Social Media Manager' => rand(50000, 120000),
 
             'Sales Manager',
             'Business Development Manager',
             'Customer Success Manager',
             'Operations Manager',
             'Procurement Officer',
-            'Supply Chain Manager' =>
-                rand(90000, 180000),
+            'Supply Chain Manager' => rand(90000, 180000),
 
             'Legal Advisor',
-            'Compliance Officer' =>
-                rand(100000, 200000),
+            'Compliance Officer' => rand(100000, 200000),
 
             'Admin Executive',
             'Office Manager',
-            'Operations Executive' =>
-                rand(50000, 110000),
+            'Operations Executive' => rand(50000, 110000),
 
-            default =>
-                rand(50000, 100000),
+            default => rand(50000, 100000),
         };
     }
 }
