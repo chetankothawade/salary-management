@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
 
-
+            $table->uuid('uuid')
+                ->nullable()
+                ->unique()
+                ->after('id');
+                
             $table->enum('role', [
                 'admin',
                 'hr_manager',

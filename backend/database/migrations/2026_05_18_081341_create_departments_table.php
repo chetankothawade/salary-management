@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
-
+            $table->uuid('uuid')->unique();
             $table->string('name', 150)->unique();
             $table->text('description')->nullable();
 
