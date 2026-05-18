@@ -1,0 +1,511 @@
+{
+  "info": {
+    "_postman_id": "8b3b21d8-6f41-4a6d-bf65-sma-api",
+    "name": "Salary Management API",
+    "description": "Postman collection for Salary Management backend APIs. Employee and Dashboard APIs use throttling middleware only and do not require authentication. The `/api/user` endpoint requires Sanctum bearer token authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "api_prefix",
+      "value": "api",
+      "type": "string"
+    },
+    {
+      "key": "bearer_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employee_uuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "department_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "country_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "employee_code",
+      "value": "EMP{{$timestamp}}",
+      "type": "string"
+    },
+    {
+      "key": "per_page",
+      "value": "10",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Application Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/up",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "up"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authenticated User",
+      "description": "This endpoint still uses auth:sanctum in routes/api.php. Set `bearer_token` before running.",
+      "item": [
+        {
+          "name": "Get Authenticated User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "user"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees?page=1&perPage={{per_page}}&search=&status=&employment_type=&department_id=&country_id=&sortedField=id&sortedBy=asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "perPage",
+                  "value": "{{per_page}}"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "key": "employment_type",
+                  "value": ""
+                },
+                {
+                  "key": "department_id",
+                  "value": ""
+                },
+                {
+                  "key": "country_id",
+                  "value": ""
+                },
+                {
+                  "key": "sortedField",
+                  "value": "id"
+                },
+                {
+                  "key": "sortedBy",
+                  "value": "asc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Employee Dropdown List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees",
+                "list"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.uuid) {",
+                  "    pm.collectionVariables.set('employee_uuid', json.data.uuid);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{user_id}},\n  \"employee_code\": \"{{employee_code}}\",\n  \"department_id\": {{department_id}},\n  \"country_id\": {{country_id}},\n  \"job_title\": \"Software Engineer\",\n  \"salary\": 75000,\n  \"employment_type\": \"full_time\",\n  \"status\": \"active\",\n  \"joining_date\": \"2026-05-18\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees/{{employee_uuid}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees",
+                "{{employee_uuid}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{user_id}},\n  \"employee_code\": \"{{employee_code}}\",\n  \"department_id\": {{department_id}},\n  \"country_id\": {{country_id}},\n  \"job_title\": \"Senior Software Engineer\",\n  \"salary\": 85000,\n  \"employment_type\": \"full_time\",\n  \"status\": \"active\",\n  \"joining_date\": \"2026-05-18\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees/{{employee_uuid}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees",
+                "{{employee_uuid}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Patch Employee",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{user_id}},\n  \"employee_code\": \"{{employee_code}}\",\n  \"department_id\": {{department_id}},\n  \"country_id\": {{country_id}},\n  \"job_title\": \"Lead Software Engineer\",\n  \"salary\": 95000,\n  \"employment_type\": \"full_time\",\n  \"status\": \"active\",\n  \"joining_date\": \"2026-05-18\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees/{{employee_uuid}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees",
+                "{{employee_uuid}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Toggle Employee Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees/{{employee_uuid}}/active",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees",
+                "{{employee_uuid}}",
+                "active"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/employees/{{employee_uuid}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "employees",
+                "{{employee_uuid}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/dashboard/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "dashboard",
+                "summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Country Salary Insights",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/dashboard/country-salary-insights",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "dashboard",
+                "country-salary-insights"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Job Title Insights",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/dashboard/job-title-insights?country_id={{country_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "dashboard",
+                "job-title-insights"
+              ],
+              "query": [
+                {
+                  "key": "country_id",
+                  "value": "{{country_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Department Insights",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/dashboard/department-insights",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "dashboard",
+                "department-insights"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Salary Distribution",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{api_prefix}}/dashboard/salary-distribution",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{api_prefix}}",
+                "dashboard",
+                "salary-distribution"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

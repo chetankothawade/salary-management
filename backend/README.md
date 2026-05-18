@@ -270,6 +270,28 @@ php artisan route:list --path=employees
 php artisan route:list --path=dashboard
 ```
 
+## Postman Collection
+
+Import this collection into Postman:
+
+```text
+postman/Salary_Management_API.postman_collection.json
+```
+
+Collection variables:
+
+- `base_url`
+- `api_prefix`
+- `bearer_token`
+- `employee_uuid`
+- `user_id`
+- `department_id`
+- `country_id`
+- `employee_code`
+- `per_page`
+
+The create employee request stores `employee_uuid` from the response automatically when the API returns `data.uuid`.
+
 ### Employee APIs
 
 Base path:
