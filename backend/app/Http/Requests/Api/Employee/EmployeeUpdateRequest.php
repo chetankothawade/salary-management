@@ -14,27 +14,28 @@ class EmployeeUpdateRequest extends BaseApiRequest
     public function rules(): array
     {
         $uuid = (string) ($this->route('employee') ?? $this->route('uuid'));
+        $required = $this->isMethod('patch') ? 'sometimes' : 'required';
 
         return [
             'user_id' => [
-                'required',
+                $required,
                 'integer',
                 'exists:users,id',
                 Rule::unique('employees', 'user_id')->ignore($uuid, 'uuid'),
             ],
             'employee_code' => [
-                'required',
+                $required,
                 'string',
                 'max:50',
                 Rule::unique('employees', 'employee_code')->ignore($uuid, 'uuid'),
             ],
-            'department_id' => 'required|integer|exists:departments,id',
-            'country_id' => 'required|integer|exists:countries,id',
-            'job_title' => 'required|string|max:150',
-            'salary' => 'required|numeric|min:0|max:999999999999.99',
-            'employment_type' => 'required|in:'.implode(',', EmployeeEmploymentType::values()),
-            'status' => 'required|in:'.implode(',', EmployeeStatus::values()),
-            'joining_date' => 'required|date',
+            'department_id' => "{$required}|integer|exists:departments,id",
+            'country_id' => "{$required}|integer|exists:countries,id",
+            'job_title' => "{$required}|string|max:150",
+            'salary' => "{$required}|numeric|min:0|max:999999999999.99",
+            'employment_type' => "{$required}|in:".implode(',', EmployeeEmploymentType::values()),
+            'status' => "{$required}|in:".implode(',', EmployeeStatus::values()),
+            'joining_date' => "{$required}|date",
         ];
     }
 
