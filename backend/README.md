@@ -132,6 +132,17 @@ composer phpstan
 composer test
 ```
 
+## Design Artifacts
+
+Additional assessment artifacts are available in:
+
+```text
+docs/product-framing.md
+docs/architecture.md
+docs/ai-usage.md
+docs/tradeoffs.md
+```
+
 ## Project Structure
 
 ```text
