@@ -26,6 +26,7 @@ class EmployeeService
         $query = Employee::query()
             ->with(['user:id,uuid,name,email,role,is_active', 'department:id,name', 'country:id,name,code,currency']);
 
+        // Apply filters only when present so the same endpoint supports list, search, and drill-down views.
         if (! empty($status)) {
             $query->where('status', $status);
         }
@@ -43,6 +44,7 @@ class EmployeeService
         }
 
         if (! empty($search)) {
+            // Search includes employee-owned fields and the linked user's name/email for HR lookup workflows.
             $query->where(function ($q) use ($search) {
                 $q->where('employee_code', 'like', "%{$search}%")
                     ->orWhere('job_title', 'like', "%{$search}%")
@@ -59,6 +61,7 @@ class EmployeeService
     public function createEmployee(array $data): Employee
     {
         return DB::transaction(function () use ($data) {
+            // Reload relationships so controllers can return a complete resource immediately after creation.
             return Employee::create($data)->load(['user', 'department', 'country']);
         });
     }
@@ -75,6 +78,7 @@ class EmployeeService
     public function deleteEmployee(Employee $employee): void
     {
         DB::transaction(function () use ($employee) {
+            // Mark inactive before soft delete so historical reporting does not treat deleted employees as active.
             $employee->update(['status' => EmployeeStatus::INACTIVE->value]);
             $employee->delete();
         });
@@ -83,6 +87,7 @@ class EmployeeService
     public function toggleStatus(Employee $employee): Employee
     {
         return DB::transaction(function () use ($employee) {
+            // Enum casts return EmployeeStatus instances, so compare against the enum case.
             $newStatus = $employee->status === EmployeeStatus::ACTIVE
                 ? EmployeeStatus::INACTIVE->value
                 : EmployeeStatus::ACTIVE->value;
@@ -102,6 +107,7 @@ class EmployeeService
 
     public function getEmployeeList(): Collection
     {
+        // Lightweight dropdown payload for UI controls; full details are served by index/show.
         return Employee::query()
             ->select(['id', 'uuid', 'user_id', 'employee_code', 'job_title'])
             ->with(['user:id,name'])

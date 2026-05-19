@@ -20,6 +20,7 @@ class DashboardController extends Controller
 
     public function summary(): JsonResponse
     {
+        // Dashboard endpoints return read-only aggregate data; calculations stay in the service.
         return $this->success(
             'messages.dashboard_summary_success',
             $this->dashboardService->summary()
@@ -36,6 +37,7 @@ class DashboardController extends Controller
 
     public function jobTitleInsights(JobTitleInsightsRequest $request): JsonResponse
     {
+        // The optional country filter is validated before reaching the aggregate query.
         return $this->success(
             'messages.dashboard_job_title_insights_success',
             $this->dashboardService->jobTitleInsights($request->filters())

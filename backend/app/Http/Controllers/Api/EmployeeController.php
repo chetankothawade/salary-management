@@ -24,6 +24,7 @@ class EmployeeController extends Controller
 
     public function index(EmployeeIndexRequest $request): JsonResponse
     {
+        // Keep filtering rules in the request and query composition in the service.
         $employees = $this->employeeService->getPaginatedEmployees($request->filters());
 
         return $this->paginate(
@@ -35,6 +36,7 @@ class EmployeeController extends Controller
 
     public function store(EmployeeStoreRequest $request): JsonResponse
     {
+        // safeExecute gives all write endpoints a consistent 500 response shape.
         return $this->safeExecute(
             'messages.employee_created',
             fn () => new EmployeeResource(
@@ -54,6 +56,7 @@ class EmployeeController extends Controller
 
     public function update(EmployeeUpdateRequest $request, string $uuid): JsonResponse
     {
+        // The request treats PUT as full replacement and PATCH as partial update.
         return $this->safeExecute(
             'messages.employee_updated',
             fn () => new EmployeeResource(
@@ -94,6 +97,7 @@ class EmployeeController extends Controller
 
     private function findEmployeeOrFail(string $uuid): Employee
     {
+        // API routes expose UUIDs so database IDs are not leaked to clients.
         $employee = $this->employeeService->getByUuid($uuid);
 
         if (! $employee) {

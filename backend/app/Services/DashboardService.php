@@ -13,6 +13,7 @@ class DashboardService
 {
     public function summary(): array
     {
+        // Keep the summary cheap: independent aggregate queries avoid loading 10,000 employee rows into memory.
         return [
             'total_employees' => Employee::count(),
             'active_employees' => Employee::where('status', EmployeeStatus::ACTIVE->value)->count(),
@@ -28,6 +29,7 @@ class DashboardService
 
     public function countrySalaryInsights(): Collection
     {
+        // Country joins let the UI show human-readable country names without extra client lookups.
         return Employee::query()
             ->join('countries', 'employees.country_id', '=', 'countries.id')
             ->select(
@@ -44,6 +46,7 @@ class DashboardService
 
     public function jobTitleInsights(array $filters): Collection
     {
+        // Optional country filtering supports the core HR question: salary range for a role in one country.
         return Employee::query()
             ->join('countries', 'employees.country_id', '=', 'countries.id')
             ->select(
@@ -64,6 +67,7 @@ class DashboardService
 
     public function departmentInsights(): Collection
     {
+        // Department rollups help HR spot teams with unusually high headcount or compensation.
         return Employee::query()
             ->join('departments', 'employees.department_id', '=', 'departments.id')
             ->select(
@@ -80,6 +84,7 @@ class DashboardService
 
     public function salaryDistribution(): array
     {
+        // Fixed buckets are simple for dashboards and deterministic for tests.
         return [
             [
                 'range' => '0 - 50K',
