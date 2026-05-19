@@ -18,6 +18,7 @@ Route::get('/user', function (Request $request) {
 Route::middleware(['ip.throttle', 'burst.throttle', 'role.throttle', 'token.throttle'])->group(function () {
 
     Route::get('employees/list', [EmployeeController::class, 'getEmployeeList']);
+    Route::get('employees/options', [EmployeeController::class, 'options']);
     Route::patch('employees/{employee}/active', [EmployeeController::class, 'active']);
     Route::apiResource('employees', EmployeeController::class);
 

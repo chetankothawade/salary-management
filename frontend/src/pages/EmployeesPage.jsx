@@ -14,23 +14,25 @@ import AddIcon from '@mui/icons-material/Add'
 import ClearIcon from '@mui/icons-material/Clear'
 import SearchIcon from '@mui/icons-material/Search'
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DeleteEmployeeDialog from '../features/employees/DeleteEmployeeDialog'
-import EmployeeFormDialog from '../features/employees/EmployeeFormDialog'
 import EmployeeTable from '../features/employees/EmployeeTable'
 import {
-  useCreateEmployee,
   useDeleteEmployee,
+  useEmployeeOptions,
   useEmployees,
   useToggleEmployeeStatus,
-  useUpdateEmployee,
 } from '../features/employees/employeeHooks'
 
 function EmployeesPage() {
+  const navigate = useNavigate()
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState({
     status: '',
     employment_type: '',
+    department_id: '',
+    country_id: '',
   })
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -42,8 +44,6 @@ function EmployeesPage() {
       sort: 'asc',
     },
   ])
-  const [formEmployee, setFormEmployee] = useState(null)
-  const [isFormOpen, setIsFormOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
 
   useEffect(() => {
@@ -71,15 +71,15 @@ function EmployeesPage() {
   }, [filters, paginationModel, search, sortModel])
 
   const employees = useEmployees(queryParams)
-  const createEmployee = useCreateEmployee()
-  const updateEmployee = useUpdateEmployee()
+  const options = useEmployeeOptions()
   const deleteEmployee = useDeleteEmployee()
   const toggleStatus = useToggleEmployeeStatus()
 
+  const departments = options.data?.data?.departments ?? []
+  const countries = options.data?.data?.countries ?? []
   const rows = employees.data?.data ?? []
   const rowCount = employees.data?.pagination?.total ?? 0
-  const mutationError =
-    createEmployee.error || updateEmployee.error || deleteEmployee.error
+  const mutationError = deleteEmployee.error
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target
@@ -97,38 +97,10 @@ function EmployeesPage() {
     setFilters({
       status: '',
       employment_type: '',
+      department_id: '',
+      country_id: '',
     })
     setPaginationModel((current) => ({ ...current, page: 0 }))
-  }
-
-  const handleOpenCreate = () => {
-    setFormEmployee(null)
-    setIsFormOpen(true)
-  }
-
-  const handleOpenEdit = (employee) => {
-    setFormEmployee(employee)
-    setIsFormOpen(true)
-  }
-
-  const handleCloseForm = () => {
-    setIsFormOpen(false)
-    setFormEmployee(null)
-    createEmployee.reset()
-    updateEmployee.reset()
-  }
-
-  const handleSubmit = (payload) => {
-    if (formEmployee) {
-      updateEmployee.mutate(
-        { uuid: formEmployee.uuid, payload },
-        { onSuccess: handleCloseForm },
-      )
-
-      return
-    }
-
-    createEmployee.mutate(payload, { onSuccess: handleCloseForm })
   }
 
   const handleConfirmDelete = () => {
@@ -156,19 +128,19 @@ function EmployeesPage() {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: { xs: 'stretch', sm: 'flex-end' } }}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          size="small"
-          onClick={handleOpenCreate}
-          sx={{
-            height: 38,
-            px: 2,
-            width: { xs: '100%', sm: 'auto' },
-          }}
-        >
-          Add Employee
-        </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            size="small"
+            onClick={() => navigate('/employees/create')}
+            sx={{
+              height: 38,
+              px: 2,
+              width: { xs: '100%', sm: 'auto' },
+            }}
+          >
+            Add Employee
+          </Button>
         </Box>
       </Stack>
 
@@ -177,6 +149,8 @@ function EmployeesPage() {
           direction={{ xs: 'column', lg: 'row' }}
           spacing={2}
           alignItems={{ xs: 'stretch', lg: 'center' }}
+          useFlexGap
+          sx={{ flexWrap: 'wrap' }}
         >
           <TextField
             label="Search"
@@ -223,6 +197,40 @@ function EmployeesPage() {
             <MenuItem value="contract">Contract</MenuItem>
             <MenuItem value="intern">Intern</MenuItem>
           </TextField>
+          <TextField
+            select
+            name="department_id"
+            label="Department"
+            value={filters.department_id}
+            onChange={handleFilterChange}
+            size="small"
+            disabled={options.isLoading}
+            sx={{ minWidth: { xs: '100%', lg: 220 } }}
+          >
+            <MenuItem value="">All</MenuItem>
+            {departments.map((department) => (
+              <MenuItem key={department.id} value={department.id}>
+                {department.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            select
+            name="country_id"
+            label="Country"
+            value={filters.country_id}
+            onChange={handleFilterChange}
+            size="small"
+            disabled={options.isLoading}
+            sx={{ minWidth: { xs: '100%', lg: 200 } }}
+          >
+            <MenuItem value="">All</MenuItem>
+            {countries.map((country) => (
+              <MenuItem key={country.id} value={country.id}>
+                {country.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <Divider flexItem orientation="vertical" sx={{ display: { xs: 'none', lg: 'block' } }} />
           <Button
             variant="outlined"
@@ -252,21 +260,11 @@ function EmployeesPage() {
           onPaginationModelChange={setPaginationModel}
           sortModel={sortModel}
           onSortModelChange={setSortModel}
-          onEdit={handleOpenEdit}
+          onEdit={(employee) => navigate(`/employees/${employee.uuid}/edit`)}
           onDelete={setDeleteTarget}
           onToggleStatus={(employee) => toggleStatus.mutate(employee.uuid)}
         />
       </Paper>
-
-      <EmployeeFormDialog
-        key={`${isFormOpen}-${formEmployee?.uuid ?? 'new'}`}
-        open={isFormOpen}
-        employee={formEmployee}
-        loading={createEmployee.isPending || updateEmployee.isPending}
-        error={createEmployee.error || updateEmployee.error}
-        onClose={handleCloseForm}
-        onSubmit={handleSubmit}
-      />
 
       <DeleteEmployeeDialog
         open={Boolean(deleteTarget)}

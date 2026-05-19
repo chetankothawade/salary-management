@@ -95,6 +95,14 @@ class EmployeeController extends Controller
         );
     }
 
+    public function options(): JsonResponse
+    {
+        return $this->success(
+            'messages.employee_options_success',
+            $this->employeeService->getEmployeeOptions()
+        );
+    }
+
     private function findEmployeeOrFail(string $uuid): Employee
     {
         // API routes expose UUIDs so database IDs are not leaked to clients.

@@ -6,6 +6,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
+import { Toaster } from 'react-hot-toast'
 import { NavLink, Outlet } from 'react-router-dom'
 
 const navItems = [
@@ -49,6 +50,7 @@ function App() {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Outlet />
       </Container>
+      <Toaster position="top-right" />
     </Box>
   )
 }

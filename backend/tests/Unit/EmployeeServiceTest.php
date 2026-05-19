@@ -29,10 +29,10 @@ class EmployeeServiceTest extends TestCase
     {
         $country = Country::factory()->create(['name' => 'India', 'code' => 'IN']);
         $department = Department::factory()->create(['name' => 'Engineering']);
-        $user = User::factory()->create(['name' => 'Ravi Kumar']);
 
         $employee = $this->service->createEmployee([
-            'user_id' => $user->id,
+            'name' => 'Ravi Kumar',
+            'email' => 'ravi.kumar@example.com',
             'employee_code' => 'UNIT-EMP-001',
             'department_id' => $department->id,
             'country_id' => $country->id,
@@ -47,10 +47,14 @@ class EmployeeServiceTest extends TestCase
         $this->assertSame('Ravi Kumar', $employee->user->name);
 
         $updated = $this->service->updateEmployee($employee, [
+            'name' => 'Ravi Patil',
+            'email' => 'ravi.patil@example.com',
             'job_title' => 'Senior Software Engineer',
             'salary' => 125000,
         ]);
 
+        $this->assertSame('Ravi Patil', $updated->user->name);
+        $this->assertSame('ravi.patil@example.com', $updated->user->email);
         $this->assertSame('Senior Software Engineer', $updated->job_title);
         $this->assertSame('125000.00', $updated->salary);
 

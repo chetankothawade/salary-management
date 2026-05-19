@@ -7,7 +7,6 @@ namespace Tests\Feature;
 use App\Models\Country;
 use App\Models\Department;
 use App\Models\Employee;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,10 +18,16 @@ class EmployeeApiTest extends TestCase
     {
         $country = Country::factory()->create(['name' => 'India', 'code' => 'IN', 'currency' => 'INR']);
         $department = Department::factory()->create(['name' => 'Engineering']);
-        $user = User::factory()->create(['name' => 'Asha Sharma']);
+
+        $this->getJson('/api/employees/options')
+            ->assertOk()
+            ->assertJsonPath('status', true)
+            ->assertJsonPath('data.departments.0.name', 'Engineering')
+            ->assertJsonPath('data.countries.0.name', 'India');
 
         $createPayload = [
-            'user_id' => $user->id,
+            'name' => 'Asha Sharma',
+            'email' => 'asha.sharma@gmail.com',
             'employee_code' => 'emp-test-001',
             'department_id' => $department->id,
             'country_id' => $country->id,
@@ -37,6 +42,8 @@ class EmployeeApiTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('status', true)
             ->assertJsonPath('data.employee_code', 'EMP-TEST-001')
+            ->assertJsonPath('data.name', 'Asha Sharma')
+            ->assertJsonPath('data.email', 'asha.sharma@gmail.com')
             ->assertJsonPath('data.full_name', 'Asha Sharma');
 
         $employeeUuid = $createResponse->json('data.uuid');
@@ -53,11 +60,15 @@ class EmployeeApiTest extends TestCase
 
         $this->putJson("/api/employees/{$employeeUuid}", [
             ...$createPayload,
+            'name' => 'Asha Patil',
+            'email' => 'asha.patil@gmail.com',
             'employee_code' => 'EMP-TEST-001',
             'job_title' => 'Senior Software Engineer',
             'salary' => 125000,
         ])
             ->assertOk()
+            ->assertJsonPath('data.name', 'Asha Patil')
+            ->assertJsonPath('data.email', 'asha.patil@gmail.com')
             ->assertJsonPath('data.job_title', 'Senior Software Engineer')
             ->assertJsonPath('data.salary', '125000.00');
 
@@ -90,7 +101,8 @@ class EmployeeApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonPath('message', 'Validation failed. Please check the submitted information.')
             ->assertJsonValidationErrors([
-                'user_id',
+                'name',
+                'email',
                 'employee_code',
                 'department_id',
                 'country_id',

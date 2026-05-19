@@ -48,6 +48,7 @@ return [
     'employee_list_success' => 'Employees retrieved successfully.',
     'employee_details_success' => 'Employee details retrieved successfully.',
     'employee_dropdown_success' => 'Employee dropdown retrieved successfully.',
+    'employee_options_success' => 'Employee options retrieved successfully.',
 
     /*
     |--------------------------------------------------------------------------

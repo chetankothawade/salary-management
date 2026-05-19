@@ -49,6 +49,7 @@ function EmployeeTable({
       headerName: 'Name',
       flex: 1,
       minWidth: 180,
+      sortable: false,
     },
     {
       field: 'job_title',
@@ -57,9 +58,17 @@ function EmployeeTable({
       minWidth: 200,
     },
     {
+      field: 'department',
+      headerName: 'Department',
+      minWidth: 180,
+      sortable: false,
+      valueGetter: (_, row) => row.department?.name ?? '-',
+    },
+    {
       field: 'country',
       headerName: 'Country',
       minWidth: 160,
+      sortable: false,
       valueGetter: (_, row) => row.country?.name ?? '-',
     },
     {
@@ -157,6 +166,7 @@ function EmployeeTable({
         sortModel={sortModel}
         onSortModelChange={onSortModelChange}
         pageSizeOptions={[10, 25, 50, 100]}
+        disableColumnFilter
         disableRowSelectionOnClick
         rowHeight={56}
         columnHeaderHeight={52}

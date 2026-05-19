@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\EmployeeStatus;
+use App\Models\Country;
+use App\Models\Department;
 use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class EmployeeService
 {
@@ -61,6 +66,17 @@ class EmployeeService
     public function createEmployee(array $data): Employee
     {
         return DB::transaction(function () use ($data) {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make(Str::random(32)),
+                'role' => 'employee',
+                'is_active' => true,
+            ]);
+
+            unset($data['name'], $data['email']);
+            $data['user_id'] = $user->id;
+
             // Reload relationships so controllers can return a complete resource immediately after creation.
             return Employee::create($data)->load(['user', 'department', 'country']);
         });
@@ -69,6 +85,13 @@ class EmployeeService
     public function updateEmployee(Employee $employee, array $data): Employee
     {
         return DB::transaction(function () use ($employee, $data) {
+            $userData = array_intersect_key($data, array_flip(['name', 'email']));
+
+            if ($userData !== []) {
+                $employee->user()->update($userData);
+            }
+
+            unset($data['name'], $data['email']);
             $employee->update($data);
 
             return $employee->fresh(['user', 'department', 'country']);
@@ -114,5 +137,19 @@ class EmployeeService
             ->where('status', EmployeeStatus::ACTIVE->value)
             ->orderBy('employee_code')
             ->get();
+    }
+
+    public function getEmployeeOptions(): array
+    {
+        return [
+            'departments' => Department::query()
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
+            'countries' => Country::query()
+                ->select(['id', 'name', 'code', 'currency'])
+                ->orderBy('name')
+                ->get(),
+        ];
     }
 }

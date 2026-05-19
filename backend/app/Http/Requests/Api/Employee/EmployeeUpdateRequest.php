@@ -7,6 +7,7 @@ namespace App\Http\Requests\Api\Employee;
 use App\Enums\EmployeeEmploymentType;
 use App\Enums\EmployeeStatus;
 use App\Http\Requests\Api\BaseApiRequest;
+use App\Models\Employee;
 use Illuminate\Validation\Rule;
 
 class EmployeeUpdateRequest extends BaseApiRequest
@@ -15,13 +16,16 @@ class EmployeeUpdateRequest extends BaseApiRequest
     {
         $uuid = (string) ($this->route('employee') ?? $this->route('uuid'));
         $required = $this->isMethod('patch') ? 'sometimes' : 'required';
+        $employee = Employee::where('uuid', $uuid)->first();
+        $userId = $employee?->user_id;
 
         return [
-            'user_id' => [
+            'name' => "{$required}|string|max:255",
+            'email' => [
                 $required,
-                'integer',
-                'exists:users,id',
-                Rule::unique('employees', 'user_id')->ignore($uuid, 'uuid'),
+                'email:rfc,dns',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($userId),
             ],
             'employee_code' => [
                 $required,
@@ -41,6 +45,12 @@ class EmployeeUpdateRequest extends BaseApiRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->has('email')) {
+            $this->merge([
+                'email' => strtolower(trim((string) $this->email)),
+            ]);
+        }
+
         if ($this->has('employee_code')) {
             $this->merge([
                 'employee_code' => strtoupper(trim((string) $this->employee_code)),

@@ -9,6 +9,22 @@ export function useEmployees(filters) {
   })
 }
 
+export function useEmployee(uuid) {
+  return useQuery({
+    queryKey: ['employees', uuid],
+    queryFn: () => employeeApi.show(uuid),
+    enabled: Boolean(uuid),
+  })
+}
+
+export function useEmployeeOptions() {
+  return useQuery({
+    queryKey: ['employees', 'options'],
+    queryFn: employeeApi.options,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export function useCreateEmployee() {
   const queryClient = useQueryClient()
 

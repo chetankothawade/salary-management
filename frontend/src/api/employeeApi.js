@@ -3,6 +3,7 @@ import { api } from './axios'
 export const employeeApi = {
   list: (params) => api.get('/employees', { params }),
   dropdown: () => api.get('/employees/list'),
+  options: () => api.get('/employees/options'),
   show: (uuid) => api.get(`/employees/${uuid}`),
   create: (payload) => api.post('/employees', payload),
   update: (uuid, payload) => api.put(`/employees/${uuid}`, payload),
