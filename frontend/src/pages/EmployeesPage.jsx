@@ -2,55 +2,84 @@ import {
   Alert,
   Box,
   Button,
-  Chip,
-  CircularProgress,
+  Divider,
+  InputAdornment,
   MenuItem,
   Paper,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import AddIcon from '@mui/icons-material/Add'
+import ClearIcon from '@mui/icons-material/Clear'
+import SearchIcon from '@mui/icons-material/Search'
+import { useEffect, useMemo, useState } from 'react'
+import DeleteEmployeeDialog from '../features/employees/DeleteEmployeeDialog'
+import EmployeeFormDialog from '../features/employees/EmployeeFormDialog'
+import EmployeeTable from '../features/employees/EmployeeTable'
 import {
+  useCreateEmployee,
   useDeleteEmployee,
   useEmployees,
   useToggleEmployeeStatus,
+  useUpdateEmployee,
 } from '../features/employees/employeeHooks'
 
-const statusColor = {
-  active: 'success',
-  inactive: 'default',
-}
-
 function EmployeesPage() {
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
   const [filters, setFilters] = useState({
-    search: '',
     status: '',
     employment_type: '',
-    sortedField: 'id',
-    sortedBy: 'asc',
-    perPage: 10,
   })
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  })
+  const [sortModel, setSortModel] = useState([
+    {
+      field: 'id',
+      sort: 'asc',
+    },
+  ])
+  const [formEmployee, setFormEmployee] = useState(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
-  const queryParams = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(filters).filter(([, value]) => value !== ''),
-      ),
-    [filters],
-  )
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setSearch(searchInput)
+      setPaginationModel((current) => ({ ...current, page: 0 }))
+    }, 350)
+
+    return () => window.clearTimeout(timeout)
+  }, [searchInput])
+
+  const queryParams = useMemo(() => {
+    const activeSort = sortModel[0] ?? { field: 'id', sort: 'asc' }
+
+    return Object.fromEntries(
+      Object.entries({
+        ...filters,
+        search,
+        page: paginationModel.page + 1,
+        perPage: paginationModel.pageSize,
+        sortedField: activeSort.field,
+        sortedBy: activeSort.sort ?? 'asc',
+      }).filter(([, value]) => value !== ''),
+    )
+  }, [filters, paginationModel, search, sortModel])
 
   const employees = useEmployees(queryParams)
+  const createEmployee = useCreateEmployee()
+  const updateEmployee = useUpdateEmployee()
   const deleteEmployee = useDeleteEmployee()
   const toggleStatus = useToggleEmployeeStatus()
 
   const rows = employees.data?.data ?? []
-  const pagination = employees.data?.pagination
+  const rowCount = employees.data?.pagination?.total ?? 0
+  const mutationError =
+    createEmployee.error || updateEmployee.error || deleteEmployee.error
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target
@@ -59,26 +88,112 @@ function EmployeesPage() {
       ...current,
       [name]: value,
     }))
+    setPaginationModel((current) => ({ ...current, page: 0 }))
+  }
+
+  const handleClearFilters = () => {
+    setSearchInput('')
+    setSearch('')
+    setFilters({
+      status: '',
+      employment_type: '',
+    })
+    setPaginationModel((current) => ({ ...current, page: 0 }))
+  }
+
+  const handleOpenCreate = () => {
+    setFormEmployee(null)
+    setIsFormOpen(true)
+  }
+
+  const handleOpenEdit = (employee) => {
+    setFormEmployee(employee)
+    setIsFormOpen(true)
+  }
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false)
+    setFormEmployee(null)
+    createEmployee.reset()
+    updateEmployee.reset()
+  }
+
+  const handleSubmit = (payload) => {
+    if (formEmployee) {
+      updateEmployee.mutate(
+        { uuid: formEmployee.uuid, payload },
+        { onSuccess: handleCloseForm },
+      )
+
+      return
+    }
+
+    createEmployee.mutate(payload, { onSuccess: handleCloseForm })
+  }
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) {
+      return
+    }
+
+    deleteEmployee.mutate(deleteTarget.uuid, {
+      onSuccess: () => setDeleteTarget(null),
+    })
   }
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h4">Employees</Typography>
-        <Typography color="text.secondary">
-          Search, filter, and maintain employee salary records.
-        </Typography>
-      </Box>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={2}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        justifyContent="space-between"
+      >
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="h4">Employees</Typography>
+          <Typography color="text.secondary">
+            Search, filter, and maintain employee salary records.
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: { xs: 'stretch', sm: 'flex-end' } }}>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          size="small"
+          onClick={handleOpenCreate}
+          sx={{
+            height: 38,
+            px: 2,
+            width: { xs: '100%', sm: 'auto' },
+          }}
+        >
+          Add Employee
+        </Button>
+        </Box>
+      </Stack>
 
       <Paper variant="outlined" sx={{ p: 2 }}>
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+        <Stack
+          direction={{ xs: 'column', lg: 'row' }}
+          spacing={2}
+          alignItems={{ xs: 'stretch', lg: 'center' }}
+        >
           <TextField
-            name="search"
             label="Search"
-            value={filters.search}
-            onChange={handleFilterChange}
+            placeholder="Name, email, code, or job title"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
             size="small"
             fullWidth
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
           <TextField
             select
@@ -87,7 +202,7 @@ function EmployeesPage() {
             value={filters.status}
             onChange={handleFilterChange}
             size="small"
-            sx={{ minWidth: 160 }}
+            sx={{ minWidth: { xs: '100%', lg: 180 } }}
           >
             <MenuItem value="">All</MenuItem>
             <MenuItem value="active">Active</MenuItem>
@@ -100,7 +215,7 @@ function EmployeesPage() {
             value={filters.employment_type}
             onChange={handleFilterChange}
             size="small"
-            sx={{ minWidth: 180 }}
+            sx={{ minWidth: { xs: '100%', lg: 200 } }}
           >
             <MenuItem value="">All</MenuItem>
             <MenuItem value="full_time">Full time</MenuItem>
@@ -108,80 +223,58 @@ function EmployeesPage() {
             <MenuItem value="contract">Contract</MenuItem>
             <MenuItem value="intern">Intern</MenuItem>
           </TextField>
+          <Divider flexItem orientation="vertical" sx={{ display: { xs: 'none', lg: 'block' } }} />
+          <Button
+            variant="outlined"
+            startIcon={<ClearIcon />}
+            onClick={handleClearFilters}
+            sx={{ minWidth: 130, minHeight: 40 }}
+          >
+            Clear
+          </Button>
         </Stack>
       </Paper>
-
-      {employees.isLoading ? (
-        <Box sx={{ display: 'grid', minHeight: 320, placeItems: 'center' }}>
-          <CircularProgress />
-        </Box>
-      ) : null}
 
       {employees.error ? (
         <Alert severity="error">{employees.error.message}</Alert>
       ) : null}
 
-      {!employees.isLoading && !employees.error ? (
-        <Paper variant="outlined">
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Code</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Job Title</TableCell>
-                <TableCell>Country</TableCell>
-                <TableCell align="right">Salary</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((employee) => (
-                <TableRow key={employee.uuid}>
-                  <TableCell>{employee.employee_code}</TableCell>
-                  <TableCell>{employee.full_name}</TableCell>
-                  <TableCell>{employee.job_title}</TableCell>
-                  <TableCell>{employee.country?.name ?? '-'}</TableCell>
-                  <TableCell align="right">{employee.salary}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={employee.status}
-                      size="small"
-                      color={statusColor[employee.status] ?? 'default'}
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Stack direction="row" spacing={1} justifyContent="flex-end">
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() => toggleStatus.mutate(employee.uuid)}
-                      >
-                        Toggle
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        variant="outlined"
-                        onClick={() => deleteEmployee.mutate(employee.uuid)}
-                      >
-                        Delete
-                      </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          <Box sx={{ p: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{' '}
-              {pagination?.total ?? 0}
-            </Typography>
-          </Box>
-        </Paper>
+      {mutationError ? (
+        <Alert severity="error">{mutationError.message}</Alert>
       ) : null}
+
+      <Paper variant="outlined">
+        <EmployeeTable
+          rows={rows}
+          rowCount={rowCount}
+          loading={employees.isLoading || employees.isFetching}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
+          onEdit={handleOpenEdit}
+          onDelete={setDeleteTarget}
+          onToggleStatus={(employee) => toggleStatus.mutate(employee.uuid)}
+        />
+      </Paper>
+
+      <EmployeeFormDialog
+        key={`${isFormOpen}-${formEmployee?.uuid ?? 'new'}`}
+        open={isFormOpen}
+        employee={formEmployee}
+        loading={createEmployee.isPending || updateEmployee.isPending}
+        error={createEmployee.error || updateEmployee.error}
+        onClose={handleCloseForm}
+        onSubmit={handleSubmit}
+      />
+
+      <DeleteEmployeeDialog
+        open={Boolean(deleteTarget)}
+        employee={deleteTarget}
+        loading={deleteEmployee.isPending}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </Stack>
   )
 }
