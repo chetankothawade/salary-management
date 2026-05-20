@@ -150,6 +150,11 @@ class EmployeeService
                 ->select(['id', 'name', 'code', 'currency'])
                 ->orderBy('name')
                 ->get(),
+            'job_titles' => Employee::query()
+                ->select('job_title')
+                ->distinct()
+                ->orderBy('job_title')
+                ->pluck('job_title'),
         ];
     }
 }

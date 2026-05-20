@@ -28,3 +28,10 @@ export function useSalaryDistribution() {
     queryFn: dashboardApi.salaryDistribution,
   })
 }
+
+export function useJobTitleInsights(filters) {
+  return useQuery({
+    queryKey: ['dashboard', 'job-title-insights', filters],
+    queryFn: () => dashboardApi.jobTitleInsights(filters),
+  })
+}
