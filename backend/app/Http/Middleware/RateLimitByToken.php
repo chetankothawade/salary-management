@@ -23,7 +23,7 @@ class RateLimitByToken
         $subject = $token ? hash('sha256', $token) : $request->ip();
         $key = 'rate_limit:token:'.$subject;
 
-        $maxAttempts = $token ? 100 : 20;
+        $maxAttempts = $token ? 250 : 200;
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
             $retryAfter = RateLimiter::availableIn($key);
 

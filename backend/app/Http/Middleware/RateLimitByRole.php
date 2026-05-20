@@ -23,9 +23,9 @@ class RateLimitByRole
         $user = $request->user();
         $role = $user === null ? UserRole::EMPLOYEE->value : $user->role;
         $limits = [
-            UserRole::ADMIN->value => 100,
+            UserRole::ADMIN->value => 200,
             UserRole::HR_MANAGER->value => 150,
-            UserRole::EMPLOYEE->value => 50,
+            UserRole::EMPLOYEE->value => 100,
         ];
 
         if (! array_key_exists($role, $limits)) {

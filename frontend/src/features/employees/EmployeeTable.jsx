@@ -17,7 +17,12 @@ const formatSalary = (value) =>
 
 function EmptyState() {
   return (
-    <Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
+    <Stack
+      alignItems="center"
+      justifyContent="center"
+      spacing={0.5}
+      sx={{ minHeight: 220, textAlign: 'center', width: '100%' }}
+    >
       <Typography variant="subtitle1">No employees found</Typography>
       <Typography variant="body2" color="text.secondary">
         Try adjusting the search or filters.
@@ -152,7 +157,7 @@ function EmployeeTable({
   ]
 
   return (
-    <Box sx={{ height: 650, width: '100%' }}>
+    <Box sx={{ height: rows.length > 0 ? 650 : 360, width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -187,6 +192,12 @@ function EmployeeTable({
           },
           '& .MuiDataGrid-row:hover': {
             bgcolor: 'action.hover',
+          },
+          '& .MuiDataGrid-overlayWrapper': {
+            minHeight: 220,
+          },
+          '& .MuiDataGrid-overlayWrapperInner': {
+            minHeight: 220,
           },
         }}
       />
