@@ -2,7 +2,12 @@
 
 ## Overview
 
-The backend is a Laravel API organized around a controller-request-service-resource pattern.
+The application has two main parts:
+
+- Laravel backend API.
+- React + Vite frontend UI.
+
+The backend is organized around a controller-request-service-resource pattern.
 
 ```text
 Request -> Controller -> Service -> Model/Database -> Resource -> API Response
@@ -17,7 +22,15 @@ This keeps responsibilities clear:
 - Resources shape API output.
 - Traits provide reusable response and UUID behavior.
 
+The frontend is organized by feature and consumes the backend through Axios and TanStack React Query.
+
+```text
+Page -> Feature Component -> React Query Hook -> API Client -> Backend API
+```
+
 ## Directory Structure
+
+Backend:
 
 ```text
 app/
@@ -39,6 +52,19 @@ routes/
 tests/
   Feature/
   Unit/
+```
+
+Frontend:
+
+```text
+frontend/src/
+  api/
+  app/
+  components/common/
+  features/
+    dashboard/
+    employees/
+  pages/
 ```
 
 ## Main Modules
@@ -82,6 +108,51 @@ Responsibilities:
 - Salary insights by job title and country.
 - Department insights.
 - Salary distribution.
+
+### Frontend Employee Management
+
+Files:
+
+```text
+frontend/src/pages/EmployeesPage.jsx
+frontend/src/pages/EmployeeCreatePage.jsx
+frontend/src/pages/EmployeeEditPage.jsx
+frontend/src/features/employees/EmployeeTable.jsx
+frontend/src/features/employees/EmployeeForm.jsx
+frontend/src/features/employees/DeleteEmployeeDialog.jsx
+frontend/src/features/employees/employeeHooks.js
+frontend/src/features/employees/employeeSchema.js
+frontend/src/api/employeeApi.js
+```
+
+Responsibilities:
+
+- Paginated employee table.
+- Search and filters for HR lookup workflows.
+- Create and edit forms.
+- Zod validation.
+- Delete confirmation.
+- Status toggle.
+- Empty and loading states.
+
+### Frontend Dashboard
+
+Files:
+
+```text
+frontend/src/pages/DashboardPage.jsx
+frontend/src/features/dashboard/dashboardHooks.js
+frontend/src/api/dashboardApi.js
+frontend/src/components/common/MetricCard.jsx
+```
+
+Responsibilities:
+
+- Summary metric cards.
+- Salary distribution chart.
+- Department headcount chart.
+- Country salary insight table.
+- Job title salary insight table with filters and pagination.
 
 ## Database Model
 
@@ -136,6 +207,16 @@ Paginated:
 ```
 
 Validation errors are handled by Laravel exception rendering in `bootstrap/app.php`.
+
+The frontend Axios client unwraps successful API responses and normalizes failed responses into:
+
+```json
+{
+  "message": "Unable to complete the request.",
+  "errors": {},
+  "status": 422
+}
+```
 
 ## Validation
 
@@ -217,6 +298,8 @@ Configured in `phpunit.xml`.
 - Seeder uses chunked inserts.
 - Search includes employee fields plus linked user name/email.
 - Dropdown endpoint returns a smaller payload than full employee listing.
+- Frontend employee table uses server-side pagination and sorting.
+- Job title dashboard insights use client-side pagination to keep the dashboard readable.
 
 ## Extension Points
 

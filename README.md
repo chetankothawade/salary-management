@@ -5,9 +5,9 @@ End-to-end salary management application for HR teams. The project contains a La
 ## Applications
 
 ```text
-backend/   Laravel API, database, seeders, tests, Postman collection
-frontend/  React UI, dashboard, employee management screens
-docs/      Product, architecture, AI usage, and trade-off notes
+backend/       Laravel API, database, seeders, tests, Postman collection
+backend/docs/  Product, architecture, AI usage, and trade-off notes
+frontend/      React UI, dashboard, employee management screens
 ```
 
 Detailed documentation:

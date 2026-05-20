@@ -17,6 +17,14 @@ AI helped shape the backend into a consistent Laravel API structure:
 - Enum-backed fixed values.
 - Reusable API response trait.
 
+AI also helped shape the frontend into a feature-based React structure:
+
+- API clients under `src/api`.
+- React Query hooks under feature folders.
+- Route-level pages under `src/pages`.
+- Reusable employee form and table components.
+- Shared UI components such as metric cards.
+
 ### Implementation
 
 AI assisted with:
@@ -27,6 +35,11 @@ AI assisted with:
 - Middleware grouping.
 - Composer scripts for Pint and PHPStan.
 - Postman collection generation.
+- React dashboard UI.
+- Employee list, search, filters, sorting, and pagination.
+- Employee create/edit forms using React Hook Form and Zod.
+- Toast notifications and delete confirmation flows.
+- Dashboard job-title insight filters and table pagination.
 
 ### Testing
 
@@ -42,6 +55,7 @@ AI helped identify weak placeholder tests and replace them with:
 AI helped prepare:
 
 - README instructions.
+- Frontend README instructions.
 - Product framing.
 - Architecture notes.
 - Tradeoff documentation.
@@ -55,6 +69,8 @@ AI-generated changes were checked with:
 composer pint:test
 composer phpstan
 php artisan test
+npm run lint
+npm run build
 ```
 
 The project currently has:
@@ -63,6 +79,7 @@ The project currently has:
 - Unit tests for service logic.
 - Static analysis through PHPStan/Larastan.
 - Formatting through Laravel Pint.
+- Frontend linting through ESLint.
 
 ## Human Review Focus
 
@@ -71,6 +88,8 @@ The main review points were:
 - Whether the backend satisfies the HR Manager use case.
 - Whether dashboard numbers are deterministic and testable.
 - Whether seeding is practical for 10,000 employees.
+- Whether frontend screens directly satisfy the HR Manager workflows.
+- Whether long dashboard tables remain readable.
 - Whether comments explain important logic without adding noise.
 - Whether code structure is maintainable for future modules.
 

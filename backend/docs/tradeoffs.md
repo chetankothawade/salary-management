@@ -7,7 +7,22 @@ The backend was built first because the core domain requirements depend on relia
 Tradeoff:
 
 - Faster validation of core business logic.
-- UI still needs to be built to satisfy the full end-to-end requirement.
+- The UI was added after the API contracts were stable, which reduced rework in React Query hooks and form integration.
+
+## Frontend Scope
+
+The frontend focuses on operational HR workflows instead of a marketing-style presentation.
+
+Benefits:
+
+- The first screen is immediately useful for salary review.
+- Employee management supports search, filters, pagination, create, edit, delete, and status changes.
+- Dashboard insight tables and charts map directly to the assessment questions.
+
+Costs:
+
+- The UI is intentionally functional and restrained.
+- Advanced interaction patterns such as saved filters, exports, and custom reports are left for later.
 
 ## Users And Employees Split
 
@@ -21,7 +36,7 @@ Benefits:
 Costs:
 
 - Employee queries need joins/eager loading for full names and emails.
-- Creating an employee requires an existing user.
+- Creating an employee must create both user identity data and employee HR data in one transaction.
 
 ## UUIDs For API Lookup
 
@@ -65,6 +80,25 @@ Costs:
 
 - Some aggregate result typing differs between SQLite and MySQL.
 - More advanced analytics may need database-specific tuning.
+
+## Job Title Insights Pagination
+
+The job title insight endpoint returns aggregate rows, and the frontend paginates those rows locally.
+
+Benefits:
+
+- Keeps the dashboard readable when many job title/country combinations exist.
+- Avoids changing backend response contracts late in the build.
+- Works well for the current aggregate result size.
+
+Costs:
+
+- If the aggregate result grows very large, backend pagination should replace client-side pagination.
+- The frontend still downloads all aggregate rows for the selected country filter.
+
+Recommended future state:
+
+- Add `page` and `perPage` support to `/api/dashboard/job-title-insights` if production data grows beyond the current assessment scale.
 
 ## Seeder Rerun Strategy
 
@@ -132,6 +166,24 @@ Costs:
 Mitigation:
 
 - Tests compare numeric aggregate values with flexible numeric assertions where needed.
+
+## Frontend Testing Gap
+
+The backend has meaningful feature and unit coverage. The frontend currently relies on linting and manual UI verification.
+
+Benefits:
+
+- Faster delivery for the assessment timeline.
+- Core salary calculations and data mutations are protected at the API/service level.
+
+Costs:
+
+- UI regressions in forms, filters, and table states are not automatically caught.
+
+Recommended future state:
+
+- Add React Testing Library tests for employee form validation and empty states.
+- Add Playwright tests for employee CRUD and dashboard insight filters.
 
 ## Comments Kept Selective
 

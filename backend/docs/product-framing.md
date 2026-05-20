@@ -36,9 +36,9 @@ The HR Manager needs operational workflows and salary insights more than a marke
    - Keep list endpoints paginated.
    - Avoid loading all employee records into memory for dashboard aggregates.
 
-## Current Backend Scope
+## Current Product Scope
 
-The backend currently provides:
+The application currently provides:
 
 - Employee CRUD APIs.
 - Employee list and dropdown APIs.
@@ -49,6 +49,10 @@ The backend currently provides:
 - Salary distribution.
 - 10,000 employee seeding using first and last name files.
 - Feature and unit tests for core API/service behavior.
+- React frontend for dashboard and employee management workflows.
+- Employee DataGrid with search, filters, sorting, pagination, empty states, and row actions.
+- Create/edit employee forms with validation, department/country dropdowns, and toast notifications.
+- Dashboard UI for summary metrics, salary distribution, department headcount, country salary insights, and job-title salary insights.
 
 ## Product Decisions
 
@@ -73,32 +77,35 @@ Deleting an employee soft-deletes the employee record and marks status as inacti
 
 Dashboard endpoints use SQL aggregate queries instead of fetching all rows. This is important because the target dataset has 10,000 employees and should remain responsive.
 
-## Suggested UI Direction
+## Implemented UI Direction
 
-The frontend should be an operational HR dashboard, not a landing page.
+The frontend is an operational HR dashboard, not a landing page.
 
-Recommended first screen:
+Current first screen:
 
 - Top summary metrics: total employees, active employees, average salary.
 - Salary distribution chart.
 - Country salary insights table/chart.
-- Department insights table.
-- Employee table with filters and actions.
+- Department headcount chart.
+- Job title salary insights with country and job-title filters.
 
 Employee management UI:
 
 - Paginated data table.
 - Search by name, email, employee code, job title.
 - Filters for status, country, department, employment type.
-- Create/edit form in modal or side panel.
+- Create/edit pages with reusable form component.
 - Delete confirmation.
+- Status toggle action.
+- Compact no-data state.
 
 Dashboard UI:
 
 - Country selector.
 - Job title selector/search.
-- Cards for min/max/average salary.
+- Cards for total employees, active employees, average salary, and salary range.
 - Compact charts for salary distribution and department comparison.
+- Paginated job-title insight table to avoid very long dashboard pages.
 
 ## Success Criteria
 
