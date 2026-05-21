@@ -23,7 +23,7 @@ class EmployeeUpdateRequest extends BaseApiRequest
             'name' => "{$required}|string|max:255",
             'email' => [
                 $required,
-                'email:rfc,dns',
+                'email:rfc',
                 'max:255',
                 Rule::unique('users', 'email')->ignore($userId),
             ],

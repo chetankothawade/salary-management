@@ -14,7 +14,7 @@ class EmployeeStoreRequest extends BaseApiRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email:rfc,dns|max:255|unique:users,email',
+            'email' => 'required|email:rfc|max:255|unique:users,email',
             'employee_code' => 'required|string|max:50|unique:employees,employee_code',
             'department_id' => 'required|integer|exists:departments,id',
             'country_id' => 'required|integer|exists:countries,id',

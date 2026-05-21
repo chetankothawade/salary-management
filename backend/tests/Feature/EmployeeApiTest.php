@@ -27,7 +27,7 @@ class EmployeeApiTest extends TestCase
 
         $createPayload = [
             'name' => 'Asha Sharma',
-            'email' => 'asha.sharma@gmail.com',
+            'email' => 'asha.sharma@example.com',
             'employee_code' => 'emp-test-001',
             'department_id' => $department->id,
             'country_id' => $country->id,
@@ -43,7 +43,7 @@ class EmployeeApiTest extends TestCase
             ->assertJsonPath('status', true)
             ->assertJsonPath('data.employee_code', 'EMP-TEST-001')
             ->assertJsonPath('data.name', 'Asha Sharma')
-            ->assertJsonPath('data.email', 'asha.sharma@gmail.com')
+            ->assertJsonPath('data.email', 'asha.sharma@example.com')
             ->assertJsonPath('data.full_name', 'Asha Sharma');
 
         $employeeUuid = $createResponse->json('data.uuid');
@@ -61,14 +61,14 @@ class EmployeeApiTest extends TestCase
         $this->putJson("/api/employees/{$employeeUuid}", [
             ...$createPayload,
             'name' => 'Asha Patil',
-            'email' => 'asha.patil@gmail.com',
+            'email' => 'asha.patil@example.com',
             'employee_code' => 'EMP-TEST-001',
             'job_title' => 'Senior Software Engineer',
             'salary' => 125000,
         ])
             ->assertOk()
             ->assertJsonPath('data.name', 'Asha Patil')
-            ->assertJsonPath('data.email', 'asha.patil@gmail.com')
+            ->assertJsonPath('data.email', 'asha.patil@example.com')
             ->assertJsonPath('data.job_title', 'Senior Software Engineer')
             ->assertJsonPath('data.salary', '125000.00');
 
